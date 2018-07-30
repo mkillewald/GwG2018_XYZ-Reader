@@ -17,12 +17,19 @@
 
 <resources>
 
-    <style name="Theme.Bacon" parent="@style/Theme.MaterialComponents.Light">
+    <style name="Theme.Bacon" parent="@style/Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorAccent">@color/colorSecondary</item>
         <item name="colorError">@color/colorError</item>
+    </style>
+
+    <style name="Theme.Bacon.Detail" parent="Theme.Bacon">
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
 </resources>

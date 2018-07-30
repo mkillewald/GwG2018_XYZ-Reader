@@ -19,11 +19,12 @@
                 android:layout_height="wrap_content"
                 android:background="@color/photo_placeholder">
                 <!--suppress AndroidLintContentDescription -->
+
                 <ImageView
                     android:id="@+id/photo"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                     />
+                    android:layout_width="match_parent"
+                    android:layout_height="305dp"
+                    android:scaleType="centerCrop"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -38,8 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:maxWidth="@dimen/detail_card_max_width"
-                android:background="#fff"
-                android:elevation="2dp"
+                android:background="@color/colorSurface"
                 android:layout_marginTop="@dimen/detail_card_top_margin">
 
                 <LinearLayout
@@ -62,7 +62,7 @@
                         android:layout_height="wrap_content"
                         android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
                         android:fontFamily="sans-serif-condensed"
-                        android:textColor="#fff"
+                        android:textColor="@android:color/primary_text_dark"
                         android:textStyle="bold"
                         android:textSize="@dimen/detail_title_text_size"
                         android:lineSpacingMultiplier="0.9" />
@@ -72,7 +72,7 @@
                         style="?android:attr/textAppearanceSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#8fff" />
+                        android:textColor="@android:color/secondary_text_dark" />
                 </LinearLayout>
 
                 <TextView
@@ -83,8 +83,8 @@
                     android:layout_marginLeft="@dimen/detail_inner_horiz_margin"
                     android:layout_marginRight="@dimen/detail_inner_horiz_margin"
                     android:paddingBottom="@dimen/detail_body_bottom_margin"
-                    android:textColor="@color/ltgray"
-                    android:textColorLink="@color/theme_accent"
+                    android:textColor="@android:color/primary_text_light"
+                    android:textColorLink="@color/colorSecondary"
                     android:textSize="@dimen/detail_body_text_size"
                     android:lineSpacingMultiplier="@fraction/detail_body_line_spacing_multiplier" />
 
@@ -92,14 +92,15 @@
         </FrameLayout>
     </com.example.xyzreader.ui.ObservableScrollView>
 
-    <ImageButton android:id="@+id/share_fab"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/share_fab"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:stateListAnimator="@anim/fab_state_list_anim"
         android:background="@drawable/add_fab_background"
         android:layout_gravity="bottom|end"
-        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
         android:src="@drawable/ic_share"
         android:elevation="@dimen/fab_elevation"
         android:contentDescription="@string/action_share" />
