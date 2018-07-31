@@ -90,11 +90,11 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
 
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.toolbar);
 
         final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -103,7 +103,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         });
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorSecondary, R.color.colorPrimary);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView = findViewById(R.id.recycler_view);
         getLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
@@ -189,7 +189,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
                     Bundle bundle = null;
 
-                    // set up explode exit transition
+                    // set up exit transition
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         bundle = ActivityOptions
                                 .makeSceneTransitionAnimation(ArticleListActivity.this)
@@ -252,9 +252,9 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         public ViewHolder(View view) {
             super(view);
-            thumbnailView = (DynamicHeightNetworkImageView) view.findViewById(R.id.thumbnail);
-            titleView = (TextView) view.findViewById(R.id.article_title);
-            subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
+            thumbnailView = view.findViewById(R.id.thumbnail);
+            titleView = view.findViewById(R.id.article_title);
+            subtitleView = view.findViewById(R.id.article_subtitle);
         }
     }
 }

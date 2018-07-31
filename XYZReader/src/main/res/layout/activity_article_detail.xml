@@ -15,7 +15,7 @@
         android:layout_height="?actionBarSize">
 
         <ImageButton
-            android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             android:id="@+id/action_up"
             android:layout_width="56dp"
             android:layout_height="?actionBarSize"

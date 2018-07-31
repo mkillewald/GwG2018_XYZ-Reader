@@ -4,26 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.ArticleListActivity"
-    tools:ignore="MergeRootFrame" >
+    android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/toolbar_container"
         android:layout_width="match_parent"
         android:layout_height="112dp"
-        android:fitsSystemWindows="true"
-        app:liftOnScroll="true"
-        app:elevation="@dimen/app_bar_elevation" >
+        android:elevation="@dimen/app_bar_elevation"
+        tools:targetApi="lollipop">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:elevation="@dimen/app_bar_elevation"
             app:toolbarId="@+id/toolbar">
 
             <android.support.v7.widget.Toolbar
@@ -34,7 +29,7 @@
                 android:layout_marginRight="@dimen/list_toolbar_side_margin"
                 android:layout_gravity="bottom"
                 android:stateListAnimator="@animator/appbar_elevation"
-                app:elevation="@dimen/app_bar_elevation"
+                android:elevation="@dimen/app_bar_elevation"
                 app:layout_collapseMode="pin">
 
                 <ImageView
