@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.xyzreader.R;
@@ -56,6 +59,36 @@ public class ArticleListActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT &&
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            // This allows for coloring the status bar on API Level 19 and 20 by setting an ImageView
+            // behind the status bar which is made transparent in styles.xml
+            // from https://sharecoding.wordpress.com/2016/09/19/android-status-bar-background-color/
+
+            ViewGroup contentView = findViewById(android.R.id.content);
+
+            if (contentView.getChildCount() > 1) {
+                contentView.removeViewAt(1);
+            }
+
+            Resources resources = getResources();
+            int res = resources.getIdentifier("status_bar_height", "dimen", "android");
+            int height = 0;
+            if (res != 0)
+                height = resources.getDimensionPixelSize(res);
+
+            ImageView image = new ImageView(this);
+            image.setLayoutParams(
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height)
+            );
+            image.setImageResource(R.drawable.color_primary_dark);
+            image.setScaleType(ImageView.ScaleType.FIT_XY);
+
+            contentView.addView(image);
+            // end of code block from https://sharecoding.wordpress.com/2016/09/19/android-status-bar-background-color/
+        }
+
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 

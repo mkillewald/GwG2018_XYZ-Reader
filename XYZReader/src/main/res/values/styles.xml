@@ -17,12 +17,17 @@
 
 <resources>
 
-    <style name="Theme.Bacon" parent="@style/Theme.MaterialComponents.Light">
+    <style name="Theme.Bacon" parent="@style/Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorAccent">@color/colorSecondary</item>
         <item name="colorError">@color/colorError</item>
+
+        <!-- Make status bar transparent to allow for setting an ImageView behind it for color -->
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:fitsSystemWindows">true</item>
     </style>
 
 </resources>

@@ -1,9 +1,11 @@
 package com.example.xyzreader.ui;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.content.Loader;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -15,6 +17,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
@@ -41,12 +45,41 @@ public class ArticleDetailActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        setContentView(R.layout.activity_article_detail);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT &&
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            // This allows for coloring the status bar on API Level 19 and 20 by setting an ImageView
+            // behind the status bar which is made transparent in styles.xml
+            // from https://sharecoding.wordpress.com/2016/09/19/android-status-bar-background-color/
+
+            ViewGroup contentView = findViewById(android.R.id.content);
+
+            if (contentView.getChildCount() > 1) {
+                contentView.removeViewAt(1);
+            }
+
+            Resources resources = getResources();
+            int res = resources.getIdentifier("status_bar_height", "dimen", "android");
+            int height = 0;
+            if (res != 0)
+                height = resources.getDimensionPixelSize(res);
+
+            ImageView image = new ImageView(this);
+            image.setLayoutParams(
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height)
+            );
+            image.setImageResource(R.drawable.color_primary_dark);
+            image.setScaleType(ImageView.ScaleType.FIT_XY);
+
+            contentView.addView(image);
+            // end of code block from https://sharecoding.wordpress.com/2016/09/19/android-status-bar-background-color/
+
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
                             View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         }
-        setContentView(R.layout.activity_article_detail);
 
         getLoaderManager().initLoader(0, null, this);
 
@@ -91,6 +124,7 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mUpButtonContainer.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @TargetApi(Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public WindowInsets onApplyWindowInsets(View view, WindowInsets windowInsets) {
                     view.onApplyWindowInsets(windowInsets);

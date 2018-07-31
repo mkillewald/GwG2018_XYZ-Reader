@@ -23,10 +23,9 @@
                 <ImageView
                     android:id="@+id/photo"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/detail_photo_height"
                     android:scaleType="centerCrop"
-                    android:adjustViewBounds="true"
-                    android:background="@color/photo_placeholder" />
+                    android:adjustViewBounds="true" />
 
                 <View
                     android:layout_width="match_parent"
@@ -42,14 +41,13 @@
                 android:layout_gravity="center_horizontal"
                 android:maxWidth="@dimen/detail_card_max_width"
                 android:background="@color/colorSurface"
-                android:layout_marginTop="@dimen/detail_card_top_margin"
-                app:elevation="@dimen/card_elevation">
+                android:layout_marginTop="@dimen/detail_card_top_margin" >
 
                 <LinearLayout
                     android:id="@+id/meta_bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#333"
+                    android:background="@color/colorBackground"
                     android:layout_gravity="bottom"
                     android:orientation="vertical"
                     android:paddingLeft="@dimen/detail_inner_horiz_margin"
