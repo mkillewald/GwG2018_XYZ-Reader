@@ -6,4 +6,7 @@
 
     <!-- fab -->
     <dimen name="fab_margin">24dp</dimen>
+
+    <!-- card -->
+    <dimen name="card_margin">12dp</dimen>
 </resources>

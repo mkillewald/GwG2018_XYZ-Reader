@@ -18,13 +18,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/photo_placeholder">
-                <!--suppress AndroidLintContentDescription -->
 
+                <!--suppress AndroidLintContentDescription -->
                 <ImageView
                     android:id="@+id/photo"
                     android:layout_width="match_parent"
-                    android:layout_height="305dp"
-                    android:scaleType="centerCrop"/>
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"
+                    android:background="@color/photo_placeholder" />
 
                 <View
                     android:layout_width="match_parent"
@@ -40,7 +42,8 @@
                 android:layout_gravity="center_horizontal"
                 android:maxWidth="@dimen/detail_card_max_width"
                 android:background="@color/colorSurface"
-                android:layout_marginTop="@dimen/detail_card_top_margin">
+                android:layout_marginTop="@dimen/detail_card_top_margin"
+                app:elevation="@dimen/card_elevation">
 
                 <LinearLayout
                     android:id="@+id/meta_bar"
