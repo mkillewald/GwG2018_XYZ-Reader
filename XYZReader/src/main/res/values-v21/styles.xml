@@ -23,6 +23,9 @@
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorAccent">@color/colorSecondary</item>
         <item name="colorError">@color/colorError</item>
+
+        <item name="android:windowExitTransition">@transition/grid_exit</item>
+        <item name="android:windowReenterTransition">@android:transition/slide_top</item>
     </style>
 
     <style name="Theme.Bacon.Detail" parent="Theme.Bacon">
