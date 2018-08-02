@@ -47,8 +47,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     public static final String ARG_ITEM_ID = "item_id";
     private static final float PARALLAX_FACTOR = 1.25f;
-    private static final int PREVIEW_LENGTH = 1000;
-    private static final int FULL_TEXT_AT_Y_POSITION = 0;
+    private static final int PREVIEW_LENGTH = 5000;
 
     private Cursor mCursor;
     private long mItemId;
@@ -67,6 +66,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     private TextView mBodyView;
     private String mContent;
+    private boolean mFullTextShown;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -136,14 +136,11 @@ public class ArticleDetailFragment extends Fragment implements
             public void onScrollChanged() {
                 mScrollY = mScrollView.getScrollY();
 
-                // This adds full text of article once a user scrolls. There is a slight
-                // delay before scrolling starts because I'm adding the full text at Y position 0,
-                // but it seems like the best trade off compared to loading every text view and
-                // freezing the UI for 1-2 seconds on the first article view.
-                if (mContent.length() > PREVIEW_LENGTH &&
-                        mBodyView.getText().length() <= PREVIEW_LENGTH &&
-                        mScrollY >= FULL_TEXT_AT_Y_POSITION) {
-                    mBodyView.append(mContent.substring(PREVIEW_LENGTH + 1));
+                // This sets the full text of article once a user scrolls to the bottom of the preview text.
+                if (!mFullTextShown && (mScrollView.getChildAt(0).getBottom() - 530) <=
+                        (mScrollView.getHeight() + mScrollY)) {
+                    mBodyView.setText(Html.fromHtml(mContent));
+                    mFullTextShown = true;
                 }
 
                 getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
