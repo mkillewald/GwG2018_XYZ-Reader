@@ -12,7 +12,7 @@ public class Config {
     static {
         URL url = null;
         try {
-            url = new URL("https://go.udacity.com/xyz-reader-json" );
+            url = new URL("https://go.udacity.com/xyz-reader-json" );;
         } catch (MalformedURLException e) {
             // COMPLETED: throw a real error
             Log.e(TAG, "Malformed URL: " + e.getMessage());

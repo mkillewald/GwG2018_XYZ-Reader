@@ -15,14 +15,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
-import android.text.Layout;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +47,8 @@ public class ArticleDetailFragment extends Fragment implements
 
     public static final String ARG_ITEM_ID = "item_id";
     private static final float PARALLAX_FACTOR = 1.25f;
+    private static final int PREVIEW_LENGTH = 1000;
+    private static final int FULL_TEXT_AT_Y_POSITION = 0;
 
     private Cursor mCursor;
     private long mItemId;
@@ -61,6 +64,9 @@ public class ArticleDetailFragment extends Fragment implements
     private int mScrollY;
     private boolean mIsCard = false;
     private int mStatusBarFullOpacityBottom;
+
+    private TextView mBodyView;
+    private String mContent;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -116,8 +122,7 @@ public class ArticleDetailFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
-        mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
-                mRootView.findViewById(R.id.draw_insets_frame_layout);
+        mDrawInsetsFrameLayout = mRootView.findViewById(R.id.draw_insets_frame_layout);
         mDrawInsetsFrameLayout.setOnInsetsCallback(new DrawInsetsFrameLayout.OnInsetsCallback() {
             @Override
             public void onInsetsChanged(Rect insets) {
@@ -125,18 +130,29 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
-        mScrollView = (ObservableScrollView) mRootView.findViewById(R.id.scrollview);
+        mScrollView = mRootView.findViewById(R.id.scrollview);
         mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
             @Override
             public void onScrollChanged() {
                 mScrollY = mScrollView.getScrollY();
+
+                // This adds full text of article once a user scrolls. There is a slight
+                // delay before scrolling starts because I'm adding the full text at Y position 0,
+                // but it seems like the best trade off compared to loading every text view and
+                // freezing the UI for 1-2 seconds on the first article view.
+                if (mContent.length() > PREVIEW_LENGTH &&
+                        mBodyView.getText().length() <= PREVIEW_LENGTH &&
+                        mScrollY >= FULL_TEXT_AT_Y_POSITION) {
+                    mBodyView.append(mContent.substring(PREVIEW_LENGTH + 1));
+                }
+
                 getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
                 mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
                 updateStatusBar();
             }
         });
 
-        mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
+        mPhotoView = mRootView.findViewById(R.id.photo);
         mPhotoContainerView = mRootView.findViewById(R.id.photo_container);
 
         mStatusBarColorDrawable = new ColorDrawable(0);
@@ -144,9 +160,16 @@ public class ArticleDetailFragment extends Fragment implements
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                String title = mCursor.getString(ArticleLoader.Query.TITLE);
+                String author = mCursor.getString(ArticleLoader.Query.AUTHOR);
+                String message = String.format(Locale.getDefault(),
+                        getString(R.string.share_message), title, author);
+
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
-                        .setType("text/plain")
-                        .setText("Some sample text")
+                        .setType("image/jpeg")
+                        .setSubject(getString(R.string.share_subject))
+                        .setText(message)
                         .getIntent(), getString(R.string.action_share)));
             }
         });
@@ -201,13 +224,12 @@ public class ArticleDetailFragment extends Fragment implements
             return;
         }
 
-        TextView titleView = (TextView) mRootView.findViewById(R.id.article_title);
-        TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
+        TextView titleView = mRootView.findViewById(R.id.article_title);
+        TextView bylineView = mRootView.findViewById(R.id.article_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
-        TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
+        mBodyView = mRootView.findViewById(R.id.article_body);
 
-
-        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
+        mBodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
         if (mCursor != null) {
             mRootView.setAlpha(0);
@@ -233,9 +255,20 @@ public class ArticleDetailFragment extends Fragment implements
                                 + "</font>"));
 
             }
-            bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)
+
+            // This will preserve paragraph breaks, and remove line breaks
+            mContent = mCursor.getString(ArticleLoader.Query.BODY)
                     .replaceAll("\r\n\r\n", "<br /><br />")
-                    .replaceAll("(\r\n|\n)", " ")));
+                    .replaceAll("(\r\n|\n)", " ");
+
+            if (mContent.length() > PREVIEW_LENGTH) {
+                mBodyView.setText(Html.fromHtml(mContent.substring(0, PREVIEW_LENGTH)));  // to speed up ui
+            } else {
+                mBodyView.setText(Html.fromHtml(mContent));
+            }
+
+            mBodyView.setMovementMethod(new ScrollingMovementMethod());
+
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
                         @Override
@@ -260,7 +293,7 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setVisibility(View.GONE);
             titleView.setText("N/A");
             bylineView.setText("N/A" );
-            bodyView.setText("N/A");
+            mBodyView.setText("N/A");
         }
     }
 

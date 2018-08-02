@@ -1,6 +1,5 @@
 package com.example.xyzreader.ui;
 
-import android.app.ActivityOptions;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -60,6 +59,22 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
+        mToolbar = findViewById(R.id.toolbar);
+
+        final View toolbarContainerView = findViewById(R.id.toolbar_container);
+
+        mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorSecondary, R.color.colorPrimary);
+
+        mRecyclerView = findViewById(R.id.recycler_view);
+        getLoaderManager().initLoader(0, null, this);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT &&
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             // This allows for coloring the status bar on API Level 19 and 20 by setting an ImageView
@@ -88,23 +103,6 @@ public class ArticleListActivity extends AppCompatActivity implements
             contentView.addView(image);
             // end of code block from https://sharecoding.wordpress.com/2016/09/19/android-status-bar-background-color/
         }
-
-
-        mToolbar = findViewById(R.id.toolbar);
-
-        final View toolbarContainerView = findViewById(R.id.toolbar_container);
-
-        mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refresh();
-            }
-        });
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorSecondary, R.color.colorPrimary);
-
-        mRecyclerView = findViewById(R.id.recycler_view);
-        getLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
             refresh();
@@ -187,16 +185,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_VIEW,
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
-                    Bundle bundle = null;
-
-                    // set up exit transition
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        bundle = ActivityOptions
-                                .makeSceneTransitionAnimation(ArticleListActivity.this)
-                                .toBundle();
-                    }
-
-                    startActivity(intent, bundle);
+                    startActivity(intent);
                 }
             });
             return vh;

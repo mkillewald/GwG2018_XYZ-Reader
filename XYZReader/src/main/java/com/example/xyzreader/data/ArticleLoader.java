@@ -41,10 +41,4 @@ public class ArticleLoader extends CursorLoader {
         int ASPECT_RATIO = 6;
         int BODY = 7;
     }
-
-    public interface QueryID {
-        String[] PROJECTION = { ItemsContract.Items._ID };
-
-        int _ID = 0;
-    }
 }
