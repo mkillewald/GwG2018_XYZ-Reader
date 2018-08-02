@@ -167,7 +167,7 @@ public class ArticleDetailFragment extends Fragment implements
                         getString(R.string.share_message), title, author);
 
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
-                        .setType("image/jpeg")
+                        .setType("text/plain")
                         .setSubject(getString(R.string.share_subject))
                         .setText(message)
                         .getIntent(), getString(R.string.action_share)));
