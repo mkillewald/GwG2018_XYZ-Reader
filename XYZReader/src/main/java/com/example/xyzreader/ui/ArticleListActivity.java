@@ -28,6 +28,7 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
+import com.example.xyzreader.utility.NetworkUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,7 +45,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = ArticleListActivity.class.toString();
-    private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
 
@@ -59,7 +59,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
-        mToolbar = findViewById(R.id.toolbar);
+        Toolbar mToolbar = findViewById(R.id.toolbar);
 
         final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
@@ -110,7 +110,14 @@ public class ArticleListActivity extends AppCompatActivity implements
     }
 
     private void refresh() {
-        startService(new Intent(this, UpdaterService.class));
+        boolean networkIsOnline = NetworkUtils.isNetworkOnline(this);
+
+        if (networkIsOnline) {
+            startService(new Intent(this, UpdaterService.class));
+        } else {
+            mIsRefreshing = false;
+            mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
+        }
     }
 
     @Override
@@ -227,6 +234,7 @@ public class ArticleListActivity extends AppCompatActivity implements
             holder.thumbnailView.setImageUrl(
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
+
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
         }
 

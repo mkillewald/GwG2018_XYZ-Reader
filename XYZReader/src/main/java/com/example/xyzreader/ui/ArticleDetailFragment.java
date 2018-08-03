@@ -43,7 +43,7 @@ import com.example.xyzreader.data.ArticleLoader;
  */
 public class ArticleDetailFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String TAG = "ArticleDetailFragment";
+    private static final String TAG = ArticleDetailFragment.class.getSimpleName();
 
     public static final String ARG_ITEM_ID = "item_id";
     private static final float PARALLAX_FACTOR = 1.25f;
@@ -139,11 +139,13 @@ public class ArticleDetailFragment extends Fragment implements
                 mScrollY = mScrollView.getScrollY();
 
                 // This adds the full text of article once a user gets near to the bottom of the preview text.
-                if (!mFullTextShown && (mScrollView.getChildAt(0).getBottom() - SCROLL_Y_OFFSET) <=
+                if (!mFullTextShown && mPreviewEndIndex > 0 &&
+                        (mScrollView.getChildAt(0).getBottom() - SCROLL_Y_OFFSET) <=
                         (mScrollView.getHeight() + mScrollY)) {
                     mBodyView.append(Html.fromHtml(mContent.substring(mPreviewEndIndex)));
                     mFullTextShown = true;
                 }
+
                 getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
                 mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
                 updateStatusBar();
@@ -276,7 +278,7 @@ public class ArticleDetailFragment extends Fragment implements
                         public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
                             Bitmap bitmap = imageContainer.getBitmap();
                             if (bitmap != null) {
-                                Palette p = Palette.generate(bitmap, 12);
+                                Palette p = Palette.from(bitmap).generate();
                                 mMutedColor = p.getDarkMutedColor(0xFF333333);
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
                                 mRootView.findViewById(R.id.meta_bar)
