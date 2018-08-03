@@ -48,6 +48,7 @@ public class ArticleDetailFragment extends Fragment implements
     public static final String ARG_ITEM_ID = "item_id";
     private static final float PARALLAX_FACTOR = 1.25f;
     private static final int PREVIEW_LENGTH = 5000;
+    private static final int SCROLL_Y_OFFSET = 300;
 
     private Cursor mCursor;
     private long mItemId;
@@ -67,6 +68,7 @@ public class ArticleDetailFragment extends Fragment implements
     private TextView mBodyView;
     private String mContent;
     private boolean mFullTextShown;
+    private int mPreviewEndIndex;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -136,13 +138,12 @@ public class ArticleDetailFragment extends Fragment implements
             public void onScrollChanged() {
                 mScrollY = mScrollView.getScrollY();
 
-                // This sets the full text of article once a user scrolls to the bottom of the preview text.
-                if (!mFullTextShown && (mScrollView.getChildAt(0).getBottom() - 530) <=
+                // This adds the full text of article once a user gets near to the bottom of the preview text.
+                if (!mFullTextShown && (mScrollView.getChildAt(0).getBottom() - SCROLL_Y_OFFSET) <=
                         (mScrollView.getHeight() + mScrollY)) {
-                    mBodyView.setText(Html.fromHtml(mContent));
+                    mBodyView.append(Html.fromHtml(mContent.substring(mPreviewEndIndex)));
                     mFullTextShown = true;
                 }
-
                 getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
                 mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
                 updateStatusBar();
@@ -258,8 +259,11 @@ public class ArticleDetailFragment extends Fragment implements
                     .replaceAll("\r\n\r\n", "<br /><br />")
                     .replaceAll("(\r\n|\n)", " ");
 
-            if (mContent.length() > PREVIEW_LENGTH) {
-                mBodyView.setText(Html.fromHtml(mContent.substring(0, PREVIEW_LENGTH)));  // to speed up ui
+            // this gets the index of the next paragraph break after the set PREVIEW_LENGTH
+            mPreviewEndIndex = mContent.indexOf("<br /><br />", PREVIEW_LENGTH);
+
+            if (mPreviewEndIndex > 0 && mContent.length() > mPreviewEndIndex) {
+                mBodyView.setText(Html.fromHtml(mContent.substring(0, mPreviewEndIndex)));  // to speed up ui
             } else {
                 mBodyView.setText(Html.fromHtml(mContent));
             }

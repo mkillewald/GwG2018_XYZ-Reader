@@ -115,10 +115,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         mUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                onSupportNavigateUp();
-
-                // to use windowReenterTransition set in styles.xml (v21)
-                onBackPressed();
+                onSupportNavigateUp();
             }
         });
 
