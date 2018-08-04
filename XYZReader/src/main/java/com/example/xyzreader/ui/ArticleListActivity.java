@@ -22,6 +22,7 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -145,20 +146,27 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
     }
 
-    private void displaySnackbar(int message) {
-        CoordinatorLayout coordinatorLayout = findViewById(R.id.cl_article_list);
-        Snackbar snackbar = Snackbar
-                .make(coordinatorLayout, message, Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(R.string.action_retry), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        refresh();
-                    }
-                });
+    private void displaySnackbar(final int message) {
+        final CoordinatorLayout coordinatorLayout = findViewById(R.id.cl_article_list);
 
-        mSwipeRefreshLayout.setEnabled(false);
-        snackbar.show();
-        mSwipeRefreshLayout.setEnabled(true);
+        // workaround for Snackbar not displaying at bottom of CoordinatorLayout when it contains
+        // a SwipeRefreshLayout. code used from
+        // https://stackoverflow.com/questions/46254786/android-kitkat-snackbar-is-not-in-the-bottom-of-the-screen
+        coordinatorLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Snackbar snackbar = Snackbar
+                        .make(coordinatorLayout, message, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(getString(R.string.action_retry), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                refresh();
+                            }
+                        });
+                snackbar.show();
+                coordinatorLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
     }
 
     private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
