@@ -149,7 +149,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         CoordinatorLayout coordinatorLayout = findViewById(R.id.cl_article_list);
         Snackbar snackbar = Snackbar
                 .make(coordinatorLayout, message, Snackbar.LENGTH_INDEFINITE)
-                .setAction("RETRY", new View.OnClickListener() {
+                .setAction(getString(R.string.action_retry), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         refresh();
