@@ -1,14 +1,9 @@
 package com.example.xyzreader.utility;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.support.v7.app.AlertDialog;
-
-import com.example.xyzreader.R;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -19,8 +14,11 @@ import java.net.URL;
 
 public class NetworkUtils {
 
-    private static boolean mNetworkIsOnline;
-
+    /**
+     * Returns a URL object from a given url String
+     * * @param stringUrl the string url
+     * @return the URL object
+     */
     public static URL getUrlFromString(String stringUrl) {
         URL url = null;
         try {
@@ -32,41 +30,12 @@ public class NetworkUtils {
         return url;
     }
 
-    public static boolean isNetworkOnline(final Context context) {
-
-        setNetworkIsOnline(true);
-
-        // check if Network is enabled on device
-        if (!isNetworkEnabled(context)) {
-            displayNetworkUnavailableAlert(context);
-            setNetworkIsOnline(false);
-        } else {
-
-            // check Internet connection
-            new CheckInternet(new CheckInternet.IsNetworkOnline() {
-                @Override
-                public void checkNetwork(boolean isOnline) {
-                    if (!isOnline) {
-                        NetworkUtils.displayNetworkNotRespondingAlert(context);
-                        setNetworkIsOnline(false);
-                    }
-                }
-            }).execute();
-        }
-
-        return mNetworkIsOnline;
-    }
-
-    public static void displayNetworkUnavailableAlert(Context context) {
-        displayAlert(context, R.string.network_unavailable, R.string.check_network_settings);
-    }
-
-    public static void displayNetworkNotRespondingAlert(Context context) {
-        displayAlert(context, R.string.not_connected, R.string.check_connection);
-    }
-
-
-    private static Boolean isNetworkEnabled(Context context) {
+    /**
+     * Checks if a network is available on the device
+     * @param context the current activity context
+     * @return a boolean that is true if a network is available, and false otherwise
+     */
+    public static boolean isNetworkEnabled(Context context) {
         // code used from https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -74,35 +43,21 @@ public class NetworkUtils {
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
-    private static void displayAlert(Context context, int title, int message) {
-        AlertDialog.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(context);
-        }
-        builder.setTitle(context.getString(title))
-                .setMessage(context.getString(message))
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert).show();
-    }
+    /**
+     * Runs a background Task to check that a connection to the Internet exits by attempting to
+     * contact 8.8.8.8 which is a public google DNS server. This will return a boolean by way
+     * of a listener callback that is true if the Internet connection is good, and false
+     * otherwise.
+     */
+    public static class CheckInternetConnection extends AsyncTask<Void, Void, Boolean> {
 
-    private static void setNetworkIsOnline(boolean bool) {
-        mNetworkIsOnline = bool;
-    }
+        private final TaskCompleted mListener;
 
-    private static class CheckInternet extends AsyncTask<Void, Void, Boolean> {
-
-        private final IsNetworkOnline mListener;
-
-        interface IsNetworkOnline {
-            void checkNetwork(boolean isOnline);
+        public interface TaskCompleted {
+            void onInternetCheckCompleted(boolean result);
         }
 
-        CheckInternet(IsNetworkOnline listener) {
+        public CheckInternetConnection(TaskCompleted listener) {
             mListener = listener;
         }
 
@@ -123,11 +78,11 @@ public class NetworkUtils {
         }
 
         @Override
-        protected void onPostExecute(Boolean isOnline) {
-            super.onPostExecute(isOnline);
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
 
             if (mListener != null) {
-                mListener.checkNetwork(isOnline);
+                mListener.onInternetCheckCompleted(result);
             }
         }
     }

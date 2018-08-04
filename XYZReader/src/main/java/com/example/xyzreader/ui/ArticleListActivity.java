@@ -10,6 +10,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -42,7 +44,8 @@ import java.util.GregorianCalendar;
  * activity presents a grid of items as cards.
  */
 public class ArticleListActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,
+        NetworkUtils.CheckInternetConnection.TaskCompleted {
 
     private static final String TAG = ArticleListActivity.class.toString();
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -53,6 +56,8 @@ public class ArticleListActivity extends AppCompatActivity implements
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+
+    private boolean mIsRefreshing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +93,8 @@ public class ArticleListActivity extends AppCompatActivity implements
             }
 
             Resources resources = getResources();
-            int res = resources.getIdentifier("status_bar_height", "dimen", "android");
+            int res = resources.getIdentifier("status_bar_height", "dimen",
+                    "android");
             int height = 0;
             if (res != 0)
                 height = resources.getDimensionPixelSize(res);
@@ -109,17 +115,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
     }
 
-    private void refresh() {
-        boolean networkIsOnline = NetworkUtils.isNetworkOnline(this);
-
-        if (networkIsOnline) {
-            startService(new Intent(this, UpdaterService.class));
-        } else {
-            mIsRefreshing = false;
-            mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
-        }
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -133,7 +128,36 @@ public class ArticleListActivity extends AppCompatActivity implements
         unregisterReceiver(mRefreshingReceiver);
     }
 
-    private boolean mIsRefreshing = false;
+    private void refresh() {
+        if (NetworkUtils.isNetworkEnabled(this)) {
+            new NetworkUtils.CheckInternetConnection(this).execute();
+        } else {
+            displaySnackbar(R.string.network_unavailable);
+        }
+    }
+
+    @Override
+    public void onInternetCheckCompleted(boolean networkIsOnline) {
+        if (networkIsOnline) {
+            startService(new Intent(this, UpdaterService.class));
+        } else {
+            displaySnackbar(R.string.network_not_connected);
+        }
+    }
+
+    private void displaySnackbar(int message) {
+        CoordinatorLayout coordinatorLayout = findViewById(R.id.cl_article_list);
+        Snackbar snackbar = Snackbar
+                .make(coordinatorLayout, message, Snackbar.LENGTH_INDEFINITE)
+                .setAction("RETRY", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        refresh();
+                    }
+                });
+
+        snackbar.show();
+    }
 
     private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
         @Override

@@ -24,6 +24,7 @@ package com.example.xyzreader.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import android.content.ContentValues;
@@ -82,9 +83,7 @@ public class SelectionBuilder {
         mSelection.append("(").append(selection).append(")");
         if (selectionArgs != null) {
         	ensureSelectionArgs();
-            for (String arg : selectionArgs) {
-                mSelectionArgs.add(arg);
-            }
+            Collections.addAll(mSelectionArgs, selectionArgs);
         }
 
         return this;
@@ -103,7 +102,7 @@ public class SelectionBuilder {
 
     private void ensureProjectionMap() {
 		if (mProjectionMap == null) {
-			mProjectionMap = new HashMap<String, String>();
+			mProjectionMap = new HashMap<>();
 		}
     }
 
@@ -115,7 +114,7 @@ public class SelectionBuilder {
 
     private void ensureSelectionArgs() {
     	if (mSelectionArgs == null) {
-    		mSelectionArgs = new ArrayList<String>();
+    		mSelectionArgs = new ArrayList<>();
     	}
     }
 

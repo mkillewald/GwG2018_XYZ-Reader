@@ -45,7 +45,7 @@ public class ArticleDetailFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = ArticleDetailFragment.class.getSimpleName();
 
-    public static final String ARG_ITEM_ID = "item_id";
+    private static final String ARG_ITEM_ID = "item_id";
     private static final float PARALLAX_FACTOR = 1.25f;
     private static final int PREVIEW_LENGTH = 5000;
     private static final int SCROLL_Y_OFFSET = 300;
