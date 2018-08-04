@@ -15,6 +15,6 @@
 
     <!-- Errors -->
     <string name="general_error">An error has occurred.</string>
-    <string name="network_unavailable">The network is unavailable. Please check your network settings and try again.</string>
-    <string name="network_not_connected">The network is not responding. Please verify you are connected to the Internet and try again.</string>
+    <string name="network_unavailable">Network connection not found!</string>
+    <string name="network_not_connected">Not connected to the Internet!</string>
 </resources>

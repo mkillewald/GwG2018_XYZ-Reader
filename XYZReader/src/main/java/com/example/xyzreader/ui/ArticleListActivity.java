@@ -156,7 +156,9 @@ public class ArticleListActivity extends AppCompatActivity implements
                     }
                 });
 
+        mSwipeRefreshLayout.setEnabled(false);
         snackbar.show();
+        mSwipeRefreshLayout.setEnabled(true);
     }
 
     private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
